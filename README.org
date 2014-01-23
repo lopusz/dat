@@ -10,6 +10,6 @@ Simple set of command-line utilities for working with textual data.
   + Accept "-" for input to from stdin
 
 * Tools 
-** csv-split
-** csv-merge
-** csv-psplit
+  + csv-split :: splitting a file
+  + csv-merge :: merging back split files
+  + csv-psplit :: splitting by using pseudorandom numbers
