@@ -1,0 +1,121 @@
+#!/usr/bin/env python
+
+import sys
+import gzip
+import getopt
+import random
+
+def printUsage():
+    print \
+"""
+Usage: dat-split -n NUMBER -m NUMBER FILE_INP FILE_OUT_SHORT FILE_OUT_LONG"
+
+Takes every n-th starting from m-th line of the FILE_INP and saves 
+to the FILE_OUT_SHORT. Rest is saved in the FILE_OUT_LONG.
+ 
+Options are:
+* -h, --header
+   File has a haeader, to be copied to both output files.
+
+* -n NUMBER, --split-parts=NUMBER 
+  Copy every NUMBER line.
+
+* -m NUMBER, --take-part=NUMBER 
+  Start from NUMBER line, must be lower or equal than specified with -n.
+"""
+
+
+def openForReading(fname):
+    if fname=="-":
+        return sys.stdin
+    elif fname.endswith(".gz"):
+        return gzip.open(fname,"rb")
+    else:
+        return open(fname,"r")
+
+
+def openForWriting(fname):
+    if fname.endswith(".gz"):
+        return gzip.open(fname,"wb")
+    else:
+        return open(fname,"w")
+    
+
+def validateOpts(inpFName,outFNameShort,outFNameLong,header,n,m):
+    if not( (n>0) and (m>0) and (m<=n)):
+        print "Error: n,m must be positive, with m<=n." 
+
+
+def parseArgv(argv):
+    try:
+        opts, argvRest = getopt.getopt(argv[1:], "hn:m:s:", 
+                                ["header" "split-parts" "take-part" "seed"])
+    except getopt.GetoptError as err:
+        print "Error: ", err 
+        printUsage()
+        sys.exit(1)
+
+    header=False
+    n=2
+    m=1
+    seed=None
+
+    for opt, val in opts:
+        if opt in ("-h","--header"):
+            header=True
+        elif opt in ("-n", "--split-parts"):
+            n = val
+        elif opt in ("-m", "--take-part"):
+            m = val
+        elif opt in ("-s", "--seed"):
+            seed=val
+        else:
+            assert False, "unhandled option"
+
+    if len(argvRest)<3:
+        print "Error: Not enough arguments."
+        printUsage()
+        sys.exit(1)
+
+    res = { "header" : header,  
+              "m" : int(m), 
+              "n" : int(n),
+              "inpFName" : argvRest[0],
+              "outFNameShort" : argvRest[1],   
+              "outFNameLong"  : argvRest[2],
+              "seed": seed }
+    return res
+
+
+def runSplit(inpFName,outFNameShort,outFNameLong,header,n,m,seed):
+   
+    inpFile=openForReading(inpFName)
+    outFileShort=openForWriting(outFNameShort)
+    outFileLong= openForWriting(outFNameLong)
+
+    if seed!=None:
+        random.seed(int(seed))
+    else:
+        random.seed()
+
+    for line in inpFile:
+        if header:
+            header=False
+            outFileShort.write(line)
+            outFileLong.write(line)
+        else:
+            curPart=random.randint(1,n)
+            if (curPart==m):
+                outFileShort.write(line)
+            else:
+                outFileLong.write(line)
+    
+    # Explicit closing (not really neccessary here)
+    
+    outFileLong.close()
+    outFileShort.close()
+    inpFile.close()
+
+
+if __name__=="__main__":
+    runSplit(**parseArgv(sys.argv))
