@@ -15,10 +15,10 @@ Options are:
 * -h, --header
    File has a haeader, to be copied to both output files.
 
-* -n NUMBER, --take-every=NUMBER - split 
+* -n NUMBER, --split-parts=NUMBER - split 
   Take every NUMBER line from FILE_INP_SHORT, the rest from FILE_INP_LONG.
 
-* -m NUMBER, --start-from=NUMBER :
+* -m NUMBER, --select-part=NUMBER :
   Start from NUMBER line, must be lower or equal than specified with -n.
 """
 
@@ -48,8 +48,8 @@ def validateOpts(inpFNameShort,inptFNameLong,outFName,header,n,m):
 
 def parseArgv(argv):
     try:
-        opts, argvRest = getopt.getopt(argv[1:], "hm:n:", 
-                            ["header" "take-every" "start-from"])
+        opts, argvRest = getopt.getopt(argv[1:], "hn:m:", 
+                            ["header" "split-parts" "select-part"])
     except getopt.GetoptError as err:
         print "Error: ", err 
         printUsage()
@@ -62,7 +62,7 @@ def parseArgv(argv):
     for opt, val in opts:
         if opt in ("-h","--header"):
             header=True
-        elif opt in ("-n", "--num-split-parts"):
+        elif opt in ("-n", "--split-parts"):
             n = val
         elif opt in ("-m", "--select-part"):
             m = val
