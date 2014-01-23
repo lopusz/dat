@@ -9,17 +9,17 @@ def printUsage():
 """
 Usage: dat-split -n NUMBER -m NUMBER FILE_INP FILE_OUT_SHORT FILE_OUT_LONG"
 
-Takes every n-th starting from m-th line of the FILE_INP and saves 
+Takes every n-th starting from m-th line of the FILE_INP and saves
 to the FILE_OUT_SHORT. Rest is saved in the FILE_OUT_LONG.
- 
+
 Options are:
 * -h, --header
    File has a haeader, to be copied to both output files.
 
-* -n NUMBER, --split-parts=NUMBER - split 
-  Copy every NUMBER line.
+* -n NUMBER, --split-parts=NUMBER
+  Copy every NUMBERth line.
 
-* -m NUMBER, --select-part=NUMBER :
+* -m NUMBER, --select-part=NUMBER
   Start from NUMBER line, must be lower or equal than specified with -n.
 """
 
@@ -38,19 +38,19 @@ def openForWriting(fname):
         return gzip.open(fname,"wb")
     else:
         return open(fname,"w")
-    
+
 
 def validateOpts(inpFName,outFNameShort,outFNameLong,header,n,m):
     if not( (n>0) and (m>0) and (m<=n)):
-        print "Error: n,m must be positive, with m<=n." 
+        print "Error: n,m must be positive, with m<=n."
 
 
 def parseArgv(argv):
     try:
-        opts, argvRest = getopt.getopt(argv[1:], "hn:m:", 
+        opts, argvRest = getopt.getopt(argv[1:], "hn:m:",
                             ["header" "split-parts" "select-part"])
     except getopt.GetoptError as err:
-        print "Error: ", err 
+        print "Error: ", err
         printUsage()
         sys.exit(1)
 
@@ -73,17 +73,17 @@ def parseArgv(argv):
         printUsage()
         sys.exit(1)
 
-    res = { "header" : header,  
-              "m" : int(m), 
+    res = { "header" : header,
+              "m" : int(m),
               "n" : int(n),
               "inpFName" : argvRest[0],
-              "outFNameShort" : argvRest[1],   
+              "outFNameShort" : argvRest[1],
               "outFNameLong"  : argvRest[2]}
     return res
 
 
 def runSplit(inpFName,outFNameShort,outFNameLong,header,n,m):
-   
+
     inpFile=openForReading(inpFName)
     outFileShort=openForWriting(outFNameShort)
     outFileLong= openForWriting(outFNameLong)
@@ -94,7 +94,7 @@ def runSplit(inpFName,outFNameShort,outFNameLong,header,n,m):
             header=False
             outFileShort.write(line)
             outFileLong.write(line)
-        else:    
+        else:
             if ((numLine % n)==(m-1)):
                 outFileShort.write(line)
             else:
@@ -102,7 +102,7 @@ def runSplit(inpFName,outFNameShort,outFNameLong,header,n,m):
             numLine+=1
 
     # Explicit closing (not really neccessary here)
-    
+
     outFileLong.close()
     outFileShort.close()
     inpFile.close()
