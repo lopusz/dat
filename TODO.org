@@ -1,0 +1,12 @@
+* Issues
+  + Add psplit
+  + Add tests
+  + Check if indeed (as reported in [[http://codebright.wordpress.com/2011/03/25/139/][this post]])
+    #+BEGIN_SRC text
+    zcat ala.txt.gz | csv-split -n5 - ala1.txt ala2.txt
+     #+END_SRC
+    is faster than
+    #+BEGIN_SRC text
+    csv-split -n5 ala.txt.gz ala1.txt ala2.txt
+    #+END_SRC
+* Done

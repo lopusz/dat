@@ -9,7 +9,7 @@ Simple set of command-line utilities for working with textual data.
   + Decent command line parssing
   + Accept "-" for input to from stdin
 
-* Tools 
+* Tools
   + csv-split :: splitting a file
   + csv-merge :: merging back split files
   + csv-psplit :: splitting by using pseudorandom numbers
